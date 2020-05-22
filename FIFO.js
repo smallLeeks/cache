@@ -33,7 +33,7 @@ class cache {
    * @param {Object} data 
    * @param {Number} duration 
    */
-  setData(key, data, duration = -1) {
+  put(key, data, duration = -1) {
     if (key) {
       this.data[key] = {
         requestTime: parseInt(new Date().getTime() / 1000),
@@ -50,7 +50,7 @@ class cache {
    * @param {Object} data 
    * @param {Number} duration 
    */
-  setLocalStorage(key, data, duration = -1) {
+  putLocalStorage(key, data, duration = -1) {
     if (key) {
       this.data[key] = {
         requestTime: parseInt(new Date().getTime() / 1000),
@@ -78,12 +78,12 @@ class cache {
     if (this.keys.length > this.MAX_LENGTH) {
       let keys = this.keys.splice(0, this.keys.length - this.MAX_LENGTH);
       for (const key in keys) {
-        this.clearData(key);
+        this.clear(key);
       }
     }
   }
 
-  getData(key) {
+  get(key) {
     let data = this.data[key];
     if (!data) {
       data = localStorage.getItem(key);
@@ -93,7 +93,7 @@ class cache {
     return data;
   }
 
-  clearData(key) {
+  clear(key) {
     delete this.data[key];
     localStorage.removeItem(key);
     let index = this.keys.indexOf(key);
@@ -116,7 +116,7 @@ class cache {
    * @return {Object} 
    */
   getSpecificData(key, duration = -1) {
-    let cachedData = this.getData(key);
+    let cachedData = this.get(key);
     if (cachedData && (duration < 0 || (cachedData.requestTime && parseInt(new Date().getTime() / 1000) - cachedData.requestTime <= duration))) return cachedData;
     return '';
   }
