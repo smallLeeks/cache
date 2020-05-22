@@ -27,15 +27,32 @@ class cache {
   }
 
   constructor() {
-    this.MAX_LENGTH = 20;
+    this.MAX_LENGTH = 10;
     this.cacheMap = new Map();
     this.capacity = {};
+  }
+
+  /**
+   * 保存数据到内存中
+   * @param {String} key 
+   * @param {Object} value 
+   * @param {Number} duration 
+   */
+  put(key, value, duration = -1) {
+    if (key) {
+      this.capacity[key] = {
+        requestTime: parseInt(new Date().getTime() / 1000),
+        data: value,
+        duration
+      }
+      this.sortKey(key, value);
+    }
   }
 
   get() {
     if (this.cacheMap.has(key)) {
       // 有命中，更改该值在堆栈中的顺序
-      let temp = this.capacity.get(key);
+      let temp = this.cacheMap.get(key);
       this.cacheMap.delete(key);
       this.cacheMap.set(key, temp);
       return temp;
@@ -44,7 +61,7 @@ class cache {
     }
   }
 
-  put(key, value) {
+  sortKey(key, value) {
     if (this.cacheMap.has(key)) {
       this.cacheMap.delete(key);
       this.cacheMap.set(key, value);
@@ -53,13 +70,17 @@ class cache {
       if (this.cacheMap.size >= this.capacity) {
         // 堆栈已满，清除一个数据
         // map的key返回一个iterator迭代器，然后用一次next获取第一个元素
-        let firstKey = this.capacity.keys().next().value;
+        let firstKey = this.cacheMap.keys().next().value;
         this.cacheMap.delete(firstKey);
-        this.capacity.set(key, value);
+        this.cacheMap.set(key, value);
       } else {
         // 堆栈未满，存数据
         this.cacheMap.set(key, value);
       }
     }
+  }
+
+  clear(key) {
+
   }
 }

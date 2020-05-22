@@ -23,21 +23,21 @@ class cache {
 
   constructor() {
     this.MAX_LENGTH = 10;
-    this.keys = [];
-    this.data = {};
+    this.cacheMap = [];
+    this.capacity = {};
   }
 
   /**
    * 保存数据到内存中
-   * @param {Array} key 
-   * @param {Object} data 
+   * @param {String} key 
+   * @param {Object} value 
    * @param {Number} duration 
    */
-  put(key, data, duration = -1) {
+  put(key, value, duration = -1) {
     if (key) {
-      this.data[key] = {
+      this.capacity[key] = {
         requestTime: parseInt(new Date().getTime() / 1000),
-        data,
+        data: value,
         duration
       }
       this.sortKey(key);
@@ -46,37 +46,35 @@ class cache {
   
   /**
    * 保存数据到内存和localStorage中
-   * @param {Array} key 
-   * @param {Object} data 
+   * @param {String} key 
+   * @param {Object} value 
    * @param {Number} duration 
    */
-  putLocalStorage(key, data, duration = -1) {
+  putLocalStorage(key, value, duration = -1) {
     if (key) {
-      this.data[key] = {
+      this.capacity[key] = {
         requestTime: parseInt(new Date().getTime() / 1000),
-        data,
+        data: value,
         duration
       }
       localStorage.setItem(
         key,
-        JSON.stringify(this.data[key])
+        JSON.stringify(this.capacity[key])
       );
       this.sortKey(key);
     }
   }
 
   sortKey(key) {
-    let index = this.keys.indexOf(key);
-    // 放至队列尾部
+    let index = this.cacheMap.indexOf(key);
     if (index >= 0) {
-      let array = this.keys.splice(index, 1);
-      this.keys.push(array[0]);
+      let array = this.cacheMap.splice(index, 1);
+      this.cacheMap.push(array[0]);
     } else {
-      this.keys.push(key);
+      this.cacheMap.push(key);
     }
-    // 超出缓存的数量，删除头部最不常用的数据
-    if (this.keys.length > this.MAX_LENGTH) {
-      let keys = this.keys.splice(0, this.keys.length - this.MAX_LENGTH);
+    if (this.cacheMap.length > this.MAX_LENGTH) {
+      let keys = this.cacheMap.splice(0, this.cacheMap.length - this.MAX_LENGTH);
       for (const key in keys) {
         this.clear(key);
       }
@@ -84,34 +82,34 @@ class cache {
   }
 
   get(key) {
-    let data = this.data[key];
+    let data = this.capacity[key];
     if (!data) {
       data = localStorage.getItem(key);
-      if (data) this.data[key] = data;
+      if (data) this.capacity[key] = data;
     }
     data && this.sortKey(key);
     return data;
   }
 
   clear(key) {
-    delete this.data[key];
+    delete this.capacity[key];
     localStorage.removeItem(key);
-    let index = this.keys.indexOf(key);
-    index >= 0 && this.keys.splice(index, 1);
+    let index = this.cacheMap.indexOf(key);
+    index >= 0 && this.cacheMap.splice(index, 1);
   }
 
   clearAllMemory() {
-    this.data = {};
+    this.capacity = {};
   }
 
   clearAllCache() {
-    this.data = {};
+    this.capacity = {};
     localStorage.clear();
   }
 
   /**
    * 获取特定时间内的缓存数据
-   * @param {Array} key
+   * @param {String} key
    * @param {Number} duration
    * @return {Object} 
    */
