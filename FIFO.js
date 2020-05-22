@@ -106,7 +106,7 @@ class cache {
 
   clearAllCache() {
     this.data = {};
-    localStorage.remove();
+    localStorage.clear();
   }
 
   /**

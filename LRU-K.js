@@ -3,6 +3,7 @@
  * 1、新数据插入到链表头部
  * 2、每当缓存命中（即缓存数据被访问），则将数据移到链表头部
  * 3、当链表满的时候，将链表尾部的数据丢弃
+ * 4、两个队列：历史队列和缓存队列
  */
 class cache {
   /**
@@ -24,6 +25,8 @@ class cache {
 
   constructor() {
     this.MAX_LENGTH = 10;
+    // head 指针指向表头元素，即为最常用的元素
+    this.head = this.tail = undefined;
     this.keys = [];
     this.data = {};
   }
@@ -107,7 +110,7 @@ class cache {
 
   clearAllCache() {
     this.data = {};
-    localStorage.remove();
+    localStorage.clear();
   }
 
   /**
