@@ -75,8 +75,8 @@ class cache {
     }
     if (this.cacheMap.length > this.MAX_LENGTH) {
       let keys = this.cacheMap.splice(0, this.cacheMap.length - this.MAX_LENGTH);
-      for (const key in keys) {
-        this.clear(key);
+      for (const [key, value] of keys.entries()) {
+        this.clear(key, value);
       }
     }
   }
@@ -91,8 +91,8 @@ class cache {
     return data;
   }
 
-  clear(key) {
-    delete this.capacity[key];
+  clear(key, value) {
+    delete this.capacity[value];
     localStorage.removeItem(key);
     let index = this.cacheMap.indexOf(key);
     index >= 0 && this.cacheMap.splice(index, 1);

@@ -27,9 +27,8 @@ class cache {
   }
 
   constructor() {
-    this.MAX_LENGTH = 10;
     this.cacheMap = new Map();
-    this.capacity = {};
+    this.capacity = 10;
   }
 
   /**
@@ -39,13 +38,32 @@ class cache {
    * @param {Number} duration 
    */
   put(key, value, duration = -1) {
+    if (this.cacheMap.has(key)) {
+      this.cacheMap.delete(key);
+      this.cacheMap.set(key, value);
+    } else {
+      if (this.cacheMap.size >= this.capacity) {
+        let firstKey = this.cacheMap.keys().next().value;
+        this.cacheMap.delete(firstKey);
+        this.cacheMap.set(key, value);
+      } else {
+        // 堆栈未满，存数据
+        this.cacheMap.set(key, value);
+      }
+    }
+  }
+
+  pusLocalStorage(key, value, duration = -1) {
     if (key) {
-      this.capacity[key] = {
+      this.cacheMap[key] = {
         requestTime: parseInt(new Date().getTime() / 1000),
         data: value,
         duration
       }
-      this.sortKey(key, value);
+      localStorage.setItem(
+        key,
+        
+      )
     }
   }
 
@@ -81,6 +99,6 @@ class cache {
   }
 
   clear(key) {
-
+    
   }
 }
