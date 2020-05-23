@@ -25,6 +25,24 @@ class cache {
     this.MAX_LENGTH = 10;
     this.cacheMap = [];
     this.capacity = {};
+    // 定时清理缓存
+    setInterval(() => {
+      this.clearExpiredData();
+    }, 10 * 1000);
+  }
+
+  clearExpiredData() {
+    let currentTime = parseInt(new Date().getTime() / 1000);
+    for (const key in this.capacity) {
+      let value = this.capacity[key];
+      if (value.requestTime && value.duration > 0) {
+        if (currentTime > value.requestTime + value.duration) {
+          for (const iterator of this.cacheMap.values()) {
+            this.clear(iterator);
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -75,8 +93,8 @@ class cache {
     }
     if (this.cacheMap.length > this.MAX_LENGTH) {
       let keys = this.cacheMap.splice(0, this.cacheMap.length - this.MAX_LENGTH);
-      for (const [key, value] of keys.entries()) {
-        this.clear(key, value);
+      for (const iterator of keys.values()) {
+        this.clear(iterator);
       }
     }
   }
@@ -91,8 +109,8 @@ class cache {
     return data;
   }
 
-  clear(key, value) {
-    delete this.capacity[value];
+  clear(key) {
+    delete this.capacity[key];
     localStorage.removeItem(key);
     let index = this.cacheMap.indexOf(key);
     index >= 0 && this.cacheMap.splice(index, 1);

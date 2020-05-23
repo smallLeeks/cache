@@ -27,8 +27,9 @@ class cache {
   }
 
   constructor() {
+    this.MAX_LENGTH = 10;
     this.cacheMap = new Map();
-    this.capacity = 10;
+    this.capacity = {};
   }
 
   /**
@@ -38,32 +39,34 @@ class cache {
    * @param {Number} duration 
    */
   put(key, value, duration = -1) {
-    if (this.cacheMap.has(key)) {
-      this.cacheMap.delete(key);
-      this.cacheMap.set(key, value);
-    } else {
-      if (this.cacheMap.size >= this.capacity) {
-        let firstKey = this.cacheMap.keys().next().value;
-        this.cacheMap.delete(firstKey);
-        this.cacheMap.set(key, value);
-      } else {
-        // 堆栈未满，存数据
-        this.cacheMap.set(key, value);
+    if (key) {
+      this.capacity = {
+        requestTime: parseInt(new Date().getTime() / 1000),
+        data: value,
+        duration
       }
+      this.sortKey(key);
     }
   }
 
+  /**
+   * 保存数据到内存和localStorage中
+   * @param {String} key 
+   * @param {Object} value 
+   * @param {Number} duration 
+   */
   pusLocalStorage(key, value, duration = -1) {
     if (key) {
-      this.cacheMap[key] = {
+      this.cacheMap = {
         requestTime: parseInt(new Date().getTime() / 1000),
         data: value,
         duration
       }
       localStorage.setItem(
         key,
-        
+        JSON.stringify(this.capacity(key))
       )
+      this.sortKey(key);
     }
   }
 
@@ -79,10 +82,10 @@ class cache {
     }
   }
 
-  sortKey(key, value) {
+  sortKey(key) {
     if (this.cacheMap.has(key)) {
       this.cacheMap.delete(key);
-      this.cacheMap.set(key, value);
+      this.cacheMap.set(key, this.capacity);
     } else {
       // 没有命中
       if (this.cacheMap.size >= this.capacity) {
