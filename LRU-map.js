@@ -30,8 +30,8 @@ class cache {
     this.MAX_LENGTH = 10;
     this.cacheMap = new Map();
     this.capacity = {};
-     // 定时清理缓存
-     this.timer = setInterval(() => {
+    // 定时清理缓存
+    this.timer = setInterval(() => {
       this.clearExpiredData();
     }, 10 * 1000);
   }
