@@ -96,7 +96,7 @@ class cache {
     let data = this.cacheMap.get(key)
     if (!data) {
       data = localStorage.getItem(key);
-      if (data) this.cacheMap.get(key) = data;
+      if (data) this.cacheMap.set(key, data);
     }
     data && this.sortKey(key);
     return data;
