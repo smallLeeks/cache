@@ -132,6 +132,12 @@ class cache {
     localStorage.clear();
   }
 
+  /**
+   * 获取特定时间内的缓存数据
+   * @param {String} key
+   * @param {Number} duration
+   * @return {Object} 
+   */
   getSpecificData(key, duration = -1){
     let cachedData = this.get(key);
     if (cachedData && (duration < 0 || (cachedData.requestTime && parseInt(new Date().getTime() / 1000) - cachedData.requestTime <= duration))) return cachedData;
