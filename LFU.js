@@ -16,12 +16,20 @@ class cache {
     return this.instance;
   }
 
-  constructor() {
+  /**
+   * @param {Number} capacity 
+   */
+  constructor(capacity) {
     this.map = new Map(); // key => value
     this.mapKey = new Map(); // key => num
-    this.capacity = 10;
+    this.capacity = capacity;
   }
 
+  /**
+   * @method set
+   * @param {String} key 
+   * @param {Object} value 
+   */
   set(key, value) {
     if (Object.is(this.capacity, 0)) return;
     let min = Math.min(...this.mapKey.values());
@@ -44,6 +52,11 @@ class cache {
     }
   }
 
+  /**
+   * @method get
+   * @param {Number} key
+   * @return {Object}
+   */
   get(key) {
     if (this.map.has(key)) {
       let num = this.mapKey.get(key);
