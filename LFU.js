@@ -2,6 +2,7 @@ class cache {
   /**
    * [instance 当前实例]
    */
+  
   static instance;
 
   /**
